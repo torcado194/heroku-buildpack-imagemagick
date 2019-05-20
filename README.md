@@ -3,13 +3,13 @@ heroku-buildpack-imagemagick
 
 This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for vendoring the ImageMagick binaries into your project.
 
-This one actually works :)
+This one works with [Heroku stack](https://devcenter.heroku.com/articles/stack) `heroku-18`.
 
 ### Install
 
 In your project root:
 
-`heroku buildpacks:add https://github.com/DuckyTeam/heroku-buildpack-imagemagick  --index 1 --app HEROKU_APP_NAME`
+`heroku buildpacks:add https://github.com/q-m/heroku-buildpack-imagemagick  --index 1 --app HEROKU_APP_NAME`
 
 "index 1" means that imagemagick will be installed first.
 
