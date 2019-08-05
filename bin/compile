@@ -13,13 +13,7 @@ INSTALL_DIR="$VENDOR_DIR/imagemagick"
 IMAGE_MAGICK_VERSION="${IMAGE_MAGICK_VERSION:-6.9.10-59}"
 CACHE_FILE="$CACHE_DIR/imagemagick-$IMAGE_MAGICK_VERSION.tar.gz"
 
-# use at most half of available memory and 5GB of disk for ImageMagick cache
-# https://stackoverflow.com/questions/24634958 for detecting dyno size
-# only supports free, hobby, standard-1x, standard-2x at the moment
-MEM_AVAIL=512
-[ `ulimit -u` -ge 512 ] && MEM_AVAIL=1024 # standard-2x
-MEM_POLICY="$(( $MEM_AVAIL / 2 ))MiB"
-DISK_POLICY="5GiB"
+CONFIG_DIR=/etc/ImageMagick-6
 
 if [ ! -f $CACHE_FILE ]; then
   # install imagemagick
@@ -67,25 +61,18 @@ else
 fi
 
 echo "-----> Writing policy file"
-
-mkdir -p $INSTALL_DIR/etc/ImageMagick
-cat > $INSTALL_DIR/policy.xml <<EOF
-<policymap>
-  <policy domain="resource" name="memory" value="$MEM_POLICY" />
-  <policy domain="resource" name="map" value="$MEM_POLICY" />
-  <policy domain="resource" name="disk" value="$DISK_POLICY" />
-  <policy domain="coder" rights="none" pattern="EPHEMERAL" />
-  <policy domain="coder" rights="none" pattern="HTTPS" />
-  <policy domain="coder" rights="none" pattern="MVG" />
-  <policy domain="coder" rights="none" pattern="MSL" />
-</policymap>
-EOF
+# use Heroku-provided policy as default, but increase disk cache size
+cat $CONFIG_DIR/policy.xml |
+  sed 's/policy domain="resource" name="disk" value="[^"]*"/policy domain="resource" name="disk" vakue="5GiB"/' \
+  > $INSTALL_DIR/$CONFIG_DIR/policy.xml
 
 echo "-----> Writing config file"
-cat > $INSTALL_DIR/magic.xml <<EOF
+cat > $INSTALL_DIR/$CONFIG_DIR/magic.xml <<EOF
 <magicmap>
- <magic name="JPEG" offset="0" target="\377\330\377"/> 
- <magic name="PNG" offset="0" target="\211PNG\r\n\032\n"/> 
+  <magic name="GIF" offset="0" target="GIF8"/>
+  <magic name="JPEG" offset="0" target="\377\330\377"/>
+  <magic name="PNG" offset="0" target="\211PNG\r\n\032\n"/>
+  <magic name="TIFF" offset="0" target="\115\115\000\052"/>
 </magicmap>
 EOF
 
@@ -94,7 +81,9 @@ echo "-----> Updating environment variables"
 PROFILE_PATH="$BUILD_DIR/.profile.d/imagemagick.sh"
 ACTUAL_INSTALL_PATH="$HOME/vendor/imagemagick"
 mkdir -p $(dirname $PROFILE_PATH)
-echo "export PATH=$ACTUAL_INSTALL_PATH/bin:\$PATH" >> $PROFILE_PATH
-echo "export LD_LIBRARY_PATH=$ACTUAL_INSTALL_PATH/lib:\$LD_LIBRARY_PATH:/usr/local/lib" >> $PROFILE_PATH
-echo "export MAGICK_CONFIGURE_PATH=$ACTUAL_INSTALL_PATH" >> $PROFILE_PATH
+cat > $PROFILE_PATH <<EOF
+export PATH=$ACTUAL_INSTALL_PATH/bin:\$PATH
+export LD_LIBRARY_PATH=$ACTUAL_INSTALL_PATH/lib:\$LD_LIBRARY_PATH:/usr/local/lib
+export MAGICK_CONFIGURE_PATH=$ACTUAL_INSTALL_PATH/$CONFIG_DIR
+EOF
 echo "-----> Done updating environment variables. All set for ImageMagick."
