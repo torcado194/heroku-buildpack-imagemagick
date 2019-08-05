@@ -13,6 +13,14 @@ INSTALL_DIR="$VENDOR_DIR/imagemagick"
 IMAGE_MAGICK_VERSION="${IMAGE_MAGICK_VERSION:-6.9.10-59}"
 CACHE_FILE="$CACHE_DIR/imagemagick-$IMAGE_MAGICK_VERSION.tar.gz"
 
+# use at most half of available memory and 5GB of disk for ImageMagick cache
+# https://stackoverflow.com/questions/24634958 for detecting dyno size
+# only supports free, hobby, standard-1x, standard-2x at the moment
+MEM_AVAIL=512
+[ `ulimit -u` -ge 512 ] && MEM_AVAIL=1024 # standard-2x
+MEM_POLICY="$(( $MEM_AVAIL / 2 ))MiB"
+DISK_POLICY="5GiB"
+
 if [ ! -f $CACHE_FILE ]; then
   # install imagemagick
   IMAGE_MAGICK_FILE="ImageMagick-$IMAGE_MAGICK_VERSION.tar.xz"
@@ -59,12 +67,13 @@ else
 fi
 
 echo "-----> Writing policy file"
+
 mkdir -p $INSTALL_DIR/etc/ImageMagick
 cat > $INSTALL_DIR/policy.xml <<EOF
 <policymap>
-  <policy domain="resource" name="memory" value="512MiB" />
-  <policy domain="resource" name="map" value="512MiB" />
-  <policy domain="resource" name="disk" value="5GiB" />
+  <policy domain="resource" name="memory" value="$MEM_POLICY" />
+  <policy domain="resource" name="map" value="$MEM_POLICY" />
+  <policy domain="resource" name="disk" value="$DISK_POLICY" />
   <policy domain="coder" rights="none" pattern="EPHEMERAL" />
   <policy domain="coder" rights="none" pattern="HTTPS" />
   <policy domain="coder" rights="none" pattern="MVG" />
