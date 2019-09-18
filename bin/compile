@@ -10,10 +10,19 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 VENDOR_DIR="$BUILD_DIR/vendor"
 INSTALL_DIR="$VENDOR_DIR/imagemagick"
-IMAGE_MAGICK_VERSION="${IMAGE_MAGICK_VERSION:-6.9.10-59}"
-CACHE_FILE="$CACHE_DIR/imagemagick-$IMAGE_MAGICK_VERSION.tar.gz"
 
 CONFIG_DIR=/etc/ImageMagick-6
+
+# Use provided ImageMagick version, or find latest 6.x on download page
+if [ ! "$IMAGE_MAGICK_VERSION" ]; then
+  IMAGE_MAGICK_VERSION=`wget -q -O - https://www.imagemagick.org/download/releases/ | sed 's/^.*href="ImageMagick-\(6\.[^"]\+\)\.tar\.gz".*/\1/p;d' | tail -n 1`
+fi
+if [ ! "$IMAGE_MAGICK_VERSION" ]; then
+  echo "ERROR: could not detect ImageMagick 6 version" 1>&2
+  exit 1
+fi
+
+CACHE_FILE="$CACHE_DIR/imagemagick-$IMAGE_MAGICK_VERSION.tar.gz"
 
 if [ ! -f $CACHE_FILE ]; then
   # install imagemagick
