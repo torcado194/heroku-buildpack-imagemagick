@@ -8,14 +8,27 @@ echo "-----> Install ImageMagick"
 
 BUILD_DIR=$1
 CACHE_DIR=$2
+ENV_DIR=$3
 VENDOR_DIR="$BUILD_DIR/vendor"
 INSTALL_DIR="$VENDOR_DIR/imagemagick"
 
 CONFIG_DIR=/etc/ImageMagick-6
 
+# return latest ImageMagick 6.x version, or use argument to get an earlier version (1 is latest, 2 is one-but-latest, etc.)
+detect_im_version() {
+  wget -q -O - https://www.imagemagick.org/download/releases/ | sed 's/^.*href="ImageMagick-\(6\.[^"]\+\)\.tar\.gz".*/\1/p;d' | tail -n "${1:-1}" | head -n 1
+}
+
+# get version from environment (Heroku-style)
+env_im_version() {
+  VAR_FILE="${ENV_DIR}/IMAGE_MAGICK_VERSION"
+  [ -e "$VAR_FILE" ] && cat "${VAR_FILE}"
+}
+
+IMAGE_MAGICK_VERSION=`env_im_version`
 # Use provided ImageMagick version, or find latest 6.x on download page
 if [ ! "$IMAGE_MAGICK_VERSION" ]; then
-  IMAGE_MAGICK_VERSION=`wget -q -O - https://www.imagemagick.org/download/releases/ | sed 's/^.*href="ImageMagick-\(6\.[^"]\+\)\.tar\.gz".*/\1/p;d' | tail -n 1`
+  IMAGE_MAGICK_VERSION=`detect_im_version`
 fi
 if [ ! "$IMAGE_MAGICK_VERSION" ]; then
   echo "ERROR: could not detect ImageMagick 6 version" 1>&2
