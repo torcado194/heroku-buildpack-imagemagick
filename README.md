@@ -1,9 +1,11 @@
 heroku-buildpack-imagemagick
 =================================
 
+[![heroku buildpack](https://img.shields.io/badge/heroku-buildpack-blueviolet)](https://elements.heroku.com/buildpacks/q-m/heroku-buildpack-imagemagick)
+
 This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for vendoring the ImageMagick binaries into your project.
 
-This one works with [Heroku stack](https://devcenter.heroku.com/articles/stack) `heroku-18`.
+This one works with [Heroku stack](https://devcenter.heroku.com/articles/stack) `heroku-18` and will always give you the latest 6.x version.
 
 ### Install
 
