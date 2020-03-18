@@ -84,14 +84,13 @@ fi
 
 echo "-----> Writing policy file"
 # use Heroku-provided policy as default, but increase RAM & disk cache size
-# allow PDF
 cat $CONFIG_DIR/policy.xml |
   sed 's/policy domain="resource" name="disk" value="[^"]*"/policy domain="resource" name="disk" value="10GiB"/' |
-  sed 's/policy domain="resource" name="disk" value="[^"]*"/policy domain="resource" name="memory" value="5GiB"/' \
-  > $INSTALL_DIR/$CONFIG_DIR/policy.xml
+  sed 's/policy domain="resource" name="memory" value="[^"]*"/policy domain="resource" name="memory" value="5GiB"/' \
+  > $INSTALL_DIR$CONFIG_DIR/policy.xml
 
 echo "-----> Writing config file"
-cat > $INSTALL_DIR/$CONFIG_DIR/magic.xml <<EOF
+cat > $INSTALL_DIR$CONFIG_DIR/magic.xml <<EOF
 <magicmap>
   <magic name="GIF" offset="0" target="GIF8"/>
   <magic name="JPEG" offset="0" target="\377\330\377"/>
