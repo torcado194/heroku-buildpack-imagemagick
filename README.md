@@ -7,6 +7,15 @@ This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) fo
 
 This one works with [Heroku stack](https://devcenter.heroku.com/articles/stack) `heroku-18` and will always give you the latest 6.x version.
 
+### Differences from Original
+
+- fixed a typo
+- changed policy parameters
+  - `disk` to 10GB
+  - `memory` to 3GB
+  - `map` to 2GB
+- prepend app-specific policy folder (`/app/.magick`) to `MAGICK_CONFIGURE_PATH`
+
 ### Install
 
 In your project root:
