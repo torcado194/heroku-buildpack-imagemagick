@@ -12,8 +12,8 @@ This one works with [Heroku stack](https://devcenter.heroku.com/articles/stack) 
 - fixed a typo
 - changed policy parameters
   - `disk` to 10GB
-  - `memory` to 3GB
-  - `map` to 2GB
+  - `memory` to 6GB
+  - `map` to 4GB
 - prepend app-specific policy folder (`/app/.magick`) to `MAGICK_CONFIGURE_PATH`
 
 ### Install

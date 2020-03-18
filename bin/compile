@@ -86,8 +86,8 @@ echo "-----> Writing policy file (StS)"
 # use Heroku-provided policy as default, but increase RAM & disk cache size
 cat $CONFIG_DIR/policy.xml |
   sed 's/policy domain="resource" name="disk" value="[^"]*"/policy domain="resource" name="disk" value="10GiB"/' |
-  sed 's/policy domain="resource" name="map" value="[^"]*"/policy domain="resource" name="map" value="2GiB"/' |
-  sed 's/policy domain="resource" name="memory" value="[^"]*"/policy domain="resource" name="memory" value="3GiB"/' \
+  sed 's/policy domain="resource" name="map" value="[^"]*"/policy domain="resource" name="map" value="4GiB"/' |
+  sed 's/policy domain="resource" name="memory" value="[^"]*"/policy domain="resource" name="memory" value="6GiB"/' \
   > $INSTALL_DIR$CONFIG_DIR/policy.xml
 
 echo "-----> Writing config file"
