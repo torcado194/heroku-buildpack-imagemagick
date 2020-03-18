@@ -82,7 +82,7 @@ else
   tar xzf $CACHE_FILE -C $VENDOR_DIR
 fi
 
-echo "-----> Writing policy file"
+echo "-----> Writing policy file (StS)"
 # use Heroku-provided policy as default, but increase RAM & disk cache size
 cat $CONFIG_DIR/policy.xml |
   sed 's/policy domain="resource" name="disk" value="[^"]*"/policy domain="resource" name="disk" value="10GiB"/' |
